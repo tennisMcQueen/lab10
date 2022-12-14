@@ -1,0 +1,35 @@
+from domeniu.clientFilm import clientFilm
+from repository.repository import Repository
+
+
+class ClientFilmService:
+    def __init__(self, clientFilmRepository: Repository, clientRepository: Repository, filmRepository: Repository):
+        self.__clientFilmRepository = clientFilmRepository
+        self.__clientRepository = clientRepository
+        self.__filmRepository = filmRepository
+
+    def adaugaInchiriere(self, idclientFilm, idClient, idFilm):
+        if self.__clientRepository.getById(idClient) is None:
+            raise  KeyError("nu exis un client cu id ul dat lmao")
+        if self.__filmRepository.getById(idFilm) is None:
+            raise  KeyError("nu exis un film cu id ul dat lmao")
+
+        inchirieri = self.__clientFilmRepository.getAll()
+        for inchiriere in inchirieri:
+            if inchiriere.getIdClient() == idClient and inchiriere.getIdFilm() == idFilm:
+                raise KeyError("clientul a inchiriat deja filmul")
+
+        inchiriere = clientFilm(idclientFilm, idClient, idFilm)
+        self.__clientFilmRepository.adauga(inchiriere)
+
+    def getAllInchirieri(self):
+        return self.__clientFilmRepository.getAll()
+
+    def returnare(self, idClient, idFilm):
+        inchirieri = self.__clientFilmRepository.getAll()
+        for inchiriere in inchirieri:
+            if inchiriere.getIdClient() == idClient and inchiriere.getIdFilm() == idFilm:
+                self.__clientFilmRepository.sterge(inchiriere.getIdEntitate())
+
+
+
